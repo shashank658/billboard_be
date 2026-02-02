@@ -19,6 +19,7 @@ import landlordRoutes from './routes/landlord.routes.js';
 import customerRoutes from './routes/customer.routes.js';
 import taxRoutes from './routes/tax.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
+import campaignRoutes from './routes/campaign.routes.js';
 
 const app: Application = express();
 
@@ -60,6 +61,7 @@ app.use('/api/landlords', landlordRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/taxes', taxRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/campaigns', campaignRoutes);
 
 // TODO: Add more routes as they are implemented
 // app.use('/api/regions', regionRoutes);
