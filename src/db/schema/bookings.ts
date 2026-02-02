@@ -12,6 +12,7 @@ export const bookings = pgTable('bookings', {
   slotNumber: integer('slot_number'),
   startDate: date('start_date').notNull(),
   endDate: date('end_date').notNull(),
+  actualEndDate: date('actual_end_date'),
   notionalValue: decimal('notional_value', { precision: 14, scale: 2 }).notNull().default('0'),
   status: varchar('status', { length: 20 }).notNull().default('created'),
   creativeRef: varchar('creative_ref', { length: 255 }),

@@ -291,13 +291,20 @@ class BookingService {
   }
 
   async updateBooking(id: string, data: UpdateBookingDto) {
+    // Get existing booking first
+    const existingBooking = await this.getBookingById(id);
+    if (!existingBooking) {
+      throw new Error('Booking not found');
+    }
+
+    // Prevent editing completed or po_generated bookings
+    const nonEditableStatuses = ['completed', 'po_generated', 'invoiced'];
+    if (nonEditableStatuses.includes(existingBooking.status)) {
+      throw new Error(`Cannot edit booking in "${existingBooking.status}" status. Booking is finalized.`);
+    }
+
     // Check if updating dates/billboard/slot
     if (data.startDate || data.endDate || data.billboardId || data.slotNumber !== undefined) {
-      const existingBooking = await this.getBookingById(id);
-      if (!existingBooking) {
-        throw new Error('Booking not found');
-      }
-
       const availability = await this.checkAvailability({
         billboardId: data.billboardId || existingBooking.billboardId,
         startDate: data.startDate || existingBooking.startDate,
@@ -459,11 +466,11 @@ class BookingService {
       throw new Error('Actual end date cannot be before the start date');
     }
 
-    // Update booking with new end date and mark as completed
+    // Update booking with actual end date (keep original end date) and mark as completed
     await db
       .update(bookings)
       .set({
-        endDate: actualEndDate,
+        actualEndDate: actualEndDate,
         status: 'completed',
         notes: booking.notes ? `${booking.notes}\n\nShort Closed: ${reason}` : `Short Closed: ${reason}`,
         updatedBy,

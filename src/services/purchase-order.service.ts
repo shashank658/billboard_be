@@ -49,6 +49,7 @@ export interface PurchaseOrderWithDetails {
     referenceCode: string;
     startDate: string;
     endDate: string;
+    actualEndDate?: string | null;
     notionalValue: string;
     status: string;
     slotNumber?: number | null;
@@ -132,6 +133,7 @@ class PurchaseOrderService {
             referenceCode: bookings.referenceCode,
             startDate: bookings.startDate,
             endDate: bookings.endDate,
+            actualEndDate: bookings.actualEndDate,
             notionalValue: bookings.notionalValue,
             status: bookings.status,
           },
@@ -194,6 +196,7 @@ class PurchaseOrderService {
           referenceCode: bookings.referenceCode,
           startDate: bookings.startDate,
           endDate: bookings.endDate,
+          actualEndDate: bookings.actualEndDate,
           notionalValue: bookings.notionalValue,
           status: bookings.status,
           slotNumber: bookings.slotNumber,
@@ -365,6 +368,7 @@ class PurchaseOrderService {
         referenceCode: bookings.referenceCode,
         startDate: bookings.startDate,
         endDate: bookings.endDate,
+        actualEndDate: bookings.actualEndDate,
         notionalValue: bookings.notionalValue,
         status: bookings.status,
         slotNumber: bookings.slotNumber,
