@@ -141,6 +141,34 @@ router.get('/calculate-pro-rata', purchaseOrderController.calculateProRata);
 
 /**
  * @swagger
+ * /api/purchase-orders/{id}/download:
+ *   get:
+ *     summary: Download purchase order as PDF
+ *     tags: [Purchase Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Purchase order ID
+ *     responses:
+ *       200:
+ *         description: PDF file
+ *         content:
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: Purchase order not found
+ */
+router.get('/:id/download', purchaseOrderController.downloadPDF);
+
+/**
+ * @swagger
  * /api/purchase-orders/{id}:
  *   get:
  *     summary: Get purchase order by ID

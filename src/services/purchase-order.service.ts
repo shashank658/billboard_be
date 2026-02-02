@@ -32,6 +32,54 @@ export interface PurchaseOrderPaginationOptions {
   dateTo?: string;
 }
 
+export interface PurchaseOrderWithDetails {
+  id: string;
+  poNumber: string;
+  bookingId: string;
+  actualStartDate: string;
+  actualEndDate: string;
+  actualValue: string;
+  adjustmentNotes?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  booking: {
+    id: string;
+    referenceCode: string;
+    startDate: string;
+    endDate: string;
+    notionalValue: string;
+    status: string;
+    slotNumber?: number | null;
+    creativeRef?: string | null;
+    notes?: string | null;
+  };
+  customer: {
+    id: string;
+    name: string;
+    contactPerson?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    gstNumber?: string | null;
+    panNumber?: string | null;
+  } | null;
+  billboard: {
+    id: string;
+    name: string;
+    code: string;
+    type: string;
+    address?: string | null;
+    ratePerDay?: string;
+  } | null;
+  campaign?: {
+    id: string;
+    name: string;
+    referenceCode: string;
+  } | null;
+}
+
 class PurchaseOrderService {
   async getAllPurchaseOrders(options: PurchaseOrderPaginationOptions) {
     const { page, pageSize, sortBy = 'createdAt', sortOrder = 'desc', customerId, search, dateFrom, dateTo } = options;

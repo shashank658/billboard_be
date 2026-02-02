@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { purchaseOrderService } from '../services/purchase-order.service.js';
+import { pdfService } from '../services/pdf.service.js';
 import { validationResult } from 'express-validator';
 import { sendSuccess, sendError } from '../utils/response.js';
 import { getPaginationParams, getSortParams } from '../utils/pagination.js';
@@ -204,6 +205,34 @@ export class PurchaseOrderController {
         sendError(res, error.message, 500);
       } else {
         sendError(res, 'Failed to calculate pro-rata value', 500);
+      }
+    }
+  }
+
+  async downloadPDF(req: Request, res: Response, _next: NextFunction) {
+    try {
+      const id = getParamId(req.params);
+      const purchaseOrder = await purchaseOrderService.getPurchaseOrderById(id);
+
+      if (!purchaseOrder) {
+        sendError(res, 'Purchase order not found', 404);
+        return;
+      }
+
+      const pdfBuffer = await pdfService.generatePurchaseOrderPDF(purchaseOrder);
+
+      // Set response headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${purchaseOrder.poNumber}.pdf"`);
+      res.setHeader('Content-Length', pdfBuffer.length);
+
+      res.send(pdfBuffer);
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      if (error instanceof Error) {
+        sendError(res, error.message, 500);
+      } else {
+        sendError(res, 'Failed to generate PDF', 500);
       }
     }
   }
