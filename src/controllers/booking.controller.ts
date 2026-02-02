@@ -282,6 +282,40 @@ export class BookingController {
       }
     }
   }
+
+  async shortCloseBooking(req: Request, res: Response, _next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+
+      const id = getParamId(req.params);
+      const { actualEndDate, reason } = req.body;
+      const userId = req.user?.id;
+
+      const booking = await bookingService.shortCloseBooking(id, actualEndDate, reason, userId);
+      sendSuccess(res, booking, 'Booking short closed successfully');
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('not found')) {
+        sendError(res, error.message, 404);
+        return;
+      }
+      if (error instanceof Error && (
+        error.message.includes('Cannot short close') ||
+        error.message.includes('Actual end date')
+      )) {
+        sendError(res, error.message, 400);
+        return;
+      }
+      if (error instanceof Error) {
+        sendError(res, error.message, 500);
+      } else {
+        sendError(res, 'Failed to short close booking', 500);
+      }
+    }
+  }
 }
 
 export const bookingController = new BookingController();
