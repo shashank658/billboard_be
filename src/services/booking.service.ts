@@ -432,6 +432,48 @@ class BookingService {
 
     return booking;
   }
+
+  async shortCloseBooking(id: string, actualEndDate: string, reason: string, updatedBy?: string) {
+    // Get booking details
+    const booking = await this.getBookingById(id);
+    if (!booking) {
+      throw new Error('Booking not found');
+    }
+
+    // Validate booking status - can only short close active or confirmed bookings
+    const validStatuses = ['created', 'confirmed', 'active'];
+    if (!validStatuses.includes(booking.status)) {
+      throw new Error(`Cannot short close booking in "${booking.status}" status. Booking must be in created, confirmed, or active status.`);
+    }
+
+    // Validate actual end date is before original end date
+    const originalEndDate = new Date(booking.endDate);
+    const newEndDate = new Date(actualEndDate);
+    const startDate = new Date(booking.startDate);
+
+    if (newEndDate >= originalEndDate) {
+      throw new Error('Actual end date must be before the original end date for short closing');
+    }
+
+    if (newEndDate < startDate) {
+      throw new Error('Actual end date cannot be before the start date');
+    }
+
+    // Update booking with new end date and mark as completed
+    await db
+      .update(bookings)
+      .set({
+        endDate: actualEndDate,
+        status: 'completed',
+        notes: booking.notes ? `${booking.notes}\n\nShort Closed: ${reason}` : `Short Closed: ${reason}`,
+        updatedBy,
+        updatedAt: new Date(),
+      })
+      .where(eq(bookings.id, id));
+
+    // Return the updated booking
+    return this.getBookingById(id);
+  }
 }
 
 export const bookingService = new BookingService();

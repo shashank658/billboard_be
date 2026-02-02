@@ -379,6 +379,55 @@ router.patch('/:id/status', bookingController.updateBookingStatus);
 
 /**
  * @swagger
+ * /api/bookings/{id}/short-close:
+ *   post:
+ *     summary: Short close a booking
+ *     description: End a booking early with an actual end date before the original end date. Booking will be marked as completed.
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - actualEndDate
+ *               - reason
+ *             properties:
+ *               actualEndDate:
+ *                 type: string
+ *                 format: date
+ *                 description: The actual end date (must be before original end date)
+ *               reason:
+ *                 type: string
+ *                 description: Reason for short closing the booking
+ *     responses:
+ *       200:
+ *         description: Booking short closed successfully
+ *       400:
+ *         description: Invalid request (wrong status, invalid dates)
+ *       404:
+ *         description: Booking not found
+ */
+router.post(
+  '/:id/short-close',
+  [
+    body('actualEndDate').notEmpty().withMessage('Actual end date is required').isDate(),
+    body('reason').notEmpty().withMessage('Reason is required').isString(),
+  ],
+  bookingController.shortCloseBooking
+);
+
+/**
+ * @swagger
  * /api/bookings/{id}:
  *   delete:
  *     summary: Delete a booking
