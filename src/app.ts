@@ -20,6 +20,7 @@ import customerRoutes from './routes/customer.routes.js';
 import taxRoutes from './routes/tax.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
 import campaignRoutes from './routes/campaign.routes.js';
+import purchaseOrderRoutes from './routes/purchase-order.routes.js';
 
 const app: Application = express();
 
@@ -62,6 +63,7 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/taxes', taxRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/campaigns', campaignRoutes);
+app.use('/api/purchase-orders', purchaseOrderRoutes);
 
 // TODO: Add more routes as they are implemented
 // app.use('/api/regions', regionRoutes);
